@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meme Machine</title>
+<style>
+  :root {
+    --paper: #FFF9EC;
+    --ink: #1A1A1A;
+    --pop: #FF4D3D;
+    --pop-dark: #D6392A;
+    --line: #1A1A1A;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+    max-width: 480px;
+  }
+
+  h1 {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    margin: 0 0 8px 0;
+    letter-spacing: 1px;
+    transform: rotate(-2deg);
+    display: inline-block;
+  }
+
+  h1 span {
+    color: var(--pop);
+    -webkit-text-stroke: 2px var(--ink);
+  }
+
+  p.tagline {
+    font-size: 1rem;
+    margin: 0;
+    opacity: 0.75;
+    font-style: italic;
+  }
+
+  .meme-frame {
+    background: white;
+    border: 3px solid var(--line);
+    border-radius: 4px;
+    padding: 12px;
+    box-shadow: 8px 8px 0 var(--ink);
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .meme-frame img {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto 12px auto;
+    border: 2px solid var(--ink);
+    min-height: 200px;
+    background: repeating-linear-gradient(
+      45deg, #eee, #eee 10px, #f5f5f5 10px, #f5f5f5 20px
+    );
+  }
+
+  .meme-title {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  button {
+    margin-top: 28px;
+    background: var(--pop);
+    color: white;
+    border: 3px solid var(--ink);
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.5px;
+    padding: 14px 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+
+  button:hover { background: var(--pop-dark); }
+
+  button:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 var(--ink);
+  }
+
+  button:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  .status {
+    margin-top: 16px;
+    font-size: 0.9rem;
+    opacity: 0.7;
+    min-height: 1.2em;
+  }
+</style>
+</head>
+<body>
+
+  <header>
+<marquee>by house of j.a.r.v.e.s</marquee>
+    <h1>Meme <span>Machine</span></h1>
+    <p class="tagline">Press the button. Receive chaos.</p>
+  </header>
+
+  <div class="meme-frame">
+    <img id="memeImage" src="" alt="A random meme will appear here" />
+    <p class="meme-title" id="memeTitle">Click below to load your first meme</p>
+  </div>
+
+  <button id="fetchBtn">Get a meme</button>
+  <p class="status" id="status"></p>
+
+<script>
+  // All the HTML elements you'll need are already grabbed for you below.
+  const memeImage = document.getElementById('memeImage');
+  const memeTitle = document.getElementById('memeTitle');
+  const fetchBtn = document.getElementById('fetchBtn');
+  const status = document.getElementById('status');
+
+  // ===================================================
+  // YOUR TASK: write the getMeme() function below.
+  //
+  // The API endpoint you'll call: https://meme-api.com/gimme
+  // It returns JSON shaped roughly like this:
+  //   { "title": "some meme title", "url": "https://i.redd.it/xyz.jpg", ... }
+  //
+  // What the function needs to do, step by step:
+  //   1. Disable the button + show "Fetching a meme..." in `status`
+  //      (so the user knows something is happening)
+  //   2. Use fetch() to request data from the API URL above
+  //   3. Convert the response to JSON with .json()
+  //   4. Set memeImage.src = the url from that data
+  //   5. Set memeTitle.textContent = the title from that data
+  //   6. Clear the status message
+  //   7. If anything goes wrong (try/catch), show an error in `status`
+  //      instead of leaving the user staring at nothing
+  //   8. Whatever happens, re-enable the button at the end
+  //
+  // Hint: this needs to be an "async function" since fetch() takes time
+  // and you'll need to "await" its response.
+  // ===================================================
+
+ async function getMeme() {
+  fetchBtn.disabled = true;
+  status.textContent = 'Fetching a meme...';
+
+  try {
+    const response = await fetch('https://meme-api.com/gimme');
+    const data = await response.json();
+
+    memeImage.src = data.url;
+    memeImage.alt = data.title;
+    memeTitle.textContent = data.title;
+
+    status.textContent = '';
+  } catch (error) {
+    status.textContent = 'Could not load a meme — try again.';
+    console.error('Meme fetch failed:', error);
+  } finally {
+    fetchBtn.disabled = false;
+  }
+}
+  // This part is already done for you — it just wires your function
+  // up to the button and runs it once when the page loads.
+  fetchBtn.addEventListener('click', getMeme);
+  getMeme();
+</script>
+
+</body>
+</html>
